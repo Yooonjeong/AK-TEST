@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>To-Do 앱</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 20px;
+        background: #f7f7f7;
+      }
+      h1 {
+        text-align: center;
+      }
+      form {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      input[type="text"] {
+        flex: 1;
+        padding: 8px;
+      }
+      button {
+        padding: 8px 12px;
+        cursor: pointer;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+      li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+        padding: 10px;
+        margin-bottom: 8px;
+        border-radius: 6px;
+      }
+      .completed {
+        text-decoration: line-through;
+        color: gray;
+      }
+      .actions {
+        display: flex;
+        gap: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>To-Do 앱</h1>
+
+    <form method="post" action="{{ url_for('index') }}">
+      <input type="text" name="title" placeholder="새 할 일을 입력하세요" required>
+      <button type="submit">추가</button>
+    </form>
+
+    <ul>
+      {% for task in tasks %}
+      <li>
+        <span class="{{ 'completed' if task.completed else '' }}">{{ task.title }}</span>
+        <div class="actions">
+          <form method="post" action="{{ url_for('toggle_task', task_id=task.id) }}">
+            <button type="submit">{{ '미완료' if task.completed else '완료' }}</button>
+          </form>
+          <form method="post" action="{{ url_for('delete_task', task_id=task.id) }}">
+            <button type="submit">삭제</button>
+          </form>
+        </div>
+      </li>
+      {% else %}
+      <li>할 일이 없습니다.</li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>
