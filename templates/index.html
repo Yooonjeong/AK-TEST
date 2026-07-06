@@ -49,7 +49,61 @@
         display: flex;
         gap: 6px;
       }
+      .filter-section {
+        margin-bottom: 16px;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .filter-button {
+        padding: 8px 16px;
+        cursor: pointer;
+        background: #f0f0f0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        transition: all 0.3s;
+      }
+      .filter-button.active {
+        background: #4CAF50;
+        color: white;
+        border-color: #4CAF50;
+      }
     </style>
+    <script>
+      let filterCompleted = false;
+
+      function toggleFilter() {
+        filterCompleted = !filterCompleted;
+        const button = document.getElementById('filterBtn');
+        button.classList.toggle('active', filterCompleted);
+        applyFilter();
+      }
+
+      function applyFilter() {
+        const items = document.querySelectorAll('ul li');
+        items.forEach(item => {
+          if (item.textContent.trim() === '할 일이 없습니다.') {
+            item.style.display = 'flex';
+            return;
+          }
+          const isCompleted = item.querySelector('span').classList.contains('completed');
+          if (filterCompleted) {
+            item.style.display = isCompleted ? 'flex' : 'none';
+          } else {
+            item.style.display = 'flex';
+          }
+        });
+
+        // 표시된 항목이 없으면 "할 일이 없습니다" 메시지 표시
+        const visibleItems = Array.from(document.querySelectorAll('ul li')).filter(
+          item => item.style.display !== 'none' && item.textContent.trim() !== '할 일이 없습니다.'
+        );
+        const emptyMessage = document.querySelector('ul li:last-child');
+        if (emptyMessage && emptyMessage.textContent.trim() === '할 일이 없습니다.') {
+          emptyMessage.style.display = visibleItems.length === 0 ? 'flex' : 'none';
+        }
+      }
+    </script>
   </head>
   <body>
     <h1>To-Do 앱</h1>
@@ -58,6 +112,10 @@
       <input type="text" name="title" placeholder="새 할 일을 입력하세요" required>
       <button type="submit">추가</button>
     </form>
+
+    <div class="filter-section">
+      <button type="button" id="filterBtn" class="filter-button" onclick="toggleFilter()">완료된 항목만 보기</button>
+    </div>
 
     <ul>
       {% for task in tasks %}
